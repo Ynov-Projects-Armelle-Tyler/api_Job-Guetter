@@ -1,5 +1,4 @@
-import { randomBytes, createHmac } from 'crypto';
-
+import { genSalt, hash } from 'bcrypt';
 import mongoose from 'mongoose';
 
 const Account = new mongoose.Schema({
@@ -24,6 +23,18 @@ const Account = new mongoose.Schema({
     default: '',
   },
 
+  access_token: {
+    type: String,
+  },
+
+  refresh_token: {
+    type: String,
+  },
+
+  refresh_token_salt: {
+    type: String,
+  },
+
   created_at: {
     type: Date,
     default: Date.now,
@@ -39,18 +50,16 @@ Account.statics.TYPE_JOBBER = 'TYPE_JOBBER';
 Account.statics.TYPE_RECRUITER = 'TYPE_RECRUITER';
 Account.statics.TYPE_COMPANY = 'TYPE_COMPANY';
 
-Account.statics.AVAILABLE_TYPES = {
-  TYPE_JOBBER: Account.statics.TYPE_JOBBER,
-  TYPE_RECRUITER: Account.statics.TYPE_RECRUITER,
-  TYPE_COMPANY: Account.statics.TYPE_COMPANY,
-};
+Account.statics.AVAILABLE_TYPES = [
+  Account.statics.TYPE_JOBBER,
+  Account.statics.TYPE_RECRUITER,
+  Account.statics.TYPE_COMPANY,
+];
 
-Account.pre('save', function (next) {
+Account.pre('save', async function (next) {
   if (this.isModified('password')) {
-    this.salt = randomBytes(16).toString('hex');
-    this.password = createHmac('sha256', this.salt)
-      .update(this.password)
-      .digest('hex');
+    this.salt = await genSalt(10);
+    this.password = await hash(this.password, this.salt);
   }
 
   next();
@@ -58,6 +67,10 @@ Account.pre('save', function (next) {
 
 Account.statics.from = function (opts) {
   return new this(opts);
+};
+
+Account.methods.genSalt = async function () {
+  return await genSalt(10);
 };
 
 Account.methods.toJSON = function () {
