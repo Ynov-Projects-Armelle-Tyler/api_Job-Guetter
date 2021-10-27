@@ -49,6 +49,9 @@ export const Forbidden = (name = 'forbidden', ...args) =>
 export const NotFound = (name = 'not_found', ...args) =>
   new AppError('NotFound', 404, name, ...args);
 
+export const Conflict = (name = 'conflict', ...args) =>
+  new AppError('Conflict', 409, name, ...args);
+
 export const TooManyRequests = (name = 'too_many_requests', ...args) =>
   new AppError('TooManyRequests', 429, name, ...args);
 
