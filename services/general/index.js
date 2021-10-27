@@ -3,6 +3,7 @@ import { Server } from '@job-guetter/api-core';
 import {
   MongoDB,
 } from '@job-guetter/api-core/connectors';
+import { AuthInterceptor } from '@job-guetter/api-core/interceptors';
 
 import * as Demo from './Demo';
 
@@ -17,7 +18,9 @@ export default async ({ port } = {}) => {
 
       // Demo
       'GET /general/test': {
-        interceptors: [],
+        interceptors: [
+          AuthInterceptor,
+        ],
         handle: Demo.get,
       },
 

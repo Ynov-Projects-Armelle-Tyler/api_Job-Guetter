@@ -1,4 +1,4 @@
-import { compare, genSalt } from 'bcrypt';
+import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 
 import isEmail from '@job-guetter/api-core/utils/validate';
