@@ -4,20 +4,24 @@ import { Account } from '../models';
 import { Forbidden, Unauthorized } from '../utils/errors';
 import { TOKEN_KEY, TOKEN_NORMAL_EXPIRY } from '../utils/env';
 
-export default async function AuthInterceptor (req, res, next) {
-  const [authMode, authValue] = (req.get('authorization') || '').split(' ');
+export default types => {
+  return async function AuthInterceptor (req, res, next) {
+    const [authMode, authValue] = (req.get('authorization') || '').split(' ');
 
-  if (!authMode && !authValue) {
-    throw Forbidden('access_token_mandatory');
-  }
+    if (!authMode || !authValue) {
+      throw Forbidden('access_token_mandatory');
+    }
 
-  try {
     const user = await Account.findOne({
       access_token: authValue,
     });
 
     if (!user) {
       throw Forbidden('authorization_error');
+    }
+
+    if (!types.includes(user.type)) {
+      throw Unauthorized('invalid_user_type');
     }
 
     const decoded = await verify(authValue, TOKEN_KEY, {
@@ -30,14 +34,10 @@ export default async function AuthInterceptor (req, res, next) {
 
     req.decoded = decoded;
 
+    // if (error.name === 'TokenExpiredError') {
+    //   throw Forbidden('token_expired');
+    // }
+
     next();
-  } catch (error) {
-    console.error(error);
-
-    if (error.name === 'TokenExpiredError') {
-      throw Forbidden('token_expired');
-    }
-  }
-
-  next();
-}
+  };
+};

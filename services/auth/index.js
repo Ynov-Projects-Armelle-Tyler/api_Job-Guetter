@@ -26,6 +26,12 @@ export default async ({ port } = {}) => {
         handle: Token.generate,
       },
 
+      // Token
+      'POST /auth/refresh': {
+        interceptors: [],
+        handle: Token.refresh,
+      },
+
     },
   });
 
