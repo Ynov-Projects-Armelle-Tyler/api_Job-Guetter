@@ -58,8 +58,6 @@ export const refresh = async (req, res) => {
     refresh_token: refreshToken,
   }), NotFound('refresh_token_not_found'));
 
-  let newRefreshToken = refreshToken;
-  let salt = user.refresh_token_salt;
   let decoded;
 
   try {
@@ -68,10 +66,14 @@ export const refresh = async (req, res) => {
     });
   } catch (e) {
     if (e.name === 'TokenExpiredError') {
-      salt = await user.genSalt();
+      const salt = await user.genSalt();
 
-      newRefreshToken = await sign({ salt: salt }, REFRESH_TOKEN_KEY,
+      const newRefreshToken = await sign({ salt: salt }, REFRESH_TOKEN_KEY,
         { expiresIn: TOKEN_EXTENDED_EXPIRY });
+
+      user.refresh_token = newRefreshToken;
+      user.refresh_token_salt = salt;
+      await user.save();
 
       refresh(req, res);
     }
@@ -85,13 +87,11 @@ export const refresh = async (req, res) => {
     TOKEN_KEY, { expiresIn: TOKEN_NORMAL_EXPIRY });
 
   user.access_token = newAccessToken;
-  user.refresh_token = newRefreshToken;
-  user.refresh_token_salt = salt;
   await user.save();
 
   res.json({
     accessToken: newAccessToken,
-    refreshToken: newRefreshToken,
+    refreshToken: refreshToken,
     tokenType: 'bearer',
   });
 };

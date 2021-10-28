@@ -8,6 +8,8 @@ export default types => {
   return async function AuthInterceptor (req, res, next) {
     const [authMode, authValue] = (req.get('authorization') || '').split(' ');
 
+    let decoded;
+
     if (!authMode || !authValue) {
       throw Forbidden('access_token_mandatory');
     }
@@ -24,19 +26,21 @@ export default types => {
       throw Unauthorized('invalid_user_type');
     }
 
-    const decoded = await verify(authValue, TOKEN_KEY, {
-      expiresIn: TOKEN_NORMAL_EXPIRY,
-    });
+    try {
+      decoded = await verify(authValue, TOKEN_KEY, {
+        expiresIn: TOKEN_NORMAL_EXPIRY,
+      });
+    } catch (e) {
+      if (e.name === 'TokenExpiredError') {
+        throw Forbidden('token_expired');
+      }
+    }
 
-    if (!user.email === decoded.email) {
+    if (user.email !== decoded.email) {
       throw Unauthorized('invalid_token');
     }
 
     req.decoded = decoded;
-
-    // if (error.name === 'TokenExpiredError') {
-    //   throw Forbidden('token_expired');
-    // }
 
     next();
   };
