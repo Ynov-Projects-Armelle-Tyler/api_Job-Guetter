@@ -16,3 +16,6 @@ export const TOKEN_EXTENDED_EXPIRY = env.TOKEN_EXTENDED_EXPIRY;
 
 // Databases
 export const MONGODB_URI = env.MONGODB_URI;
+
+// Sendgrid
+export const SENDGRID_API_KEY = env.SENDGRID_API_KEY;

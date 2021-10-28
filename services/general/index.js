@@ -2,6 +2,7 @@ import { Server } from '@job-guetter/api-core';
 
 import {
   MongoDB,
+  Sendgrid,
 } from '@job-guetter/api-core/connectors';
 import { AuthInterceptor } from '@job-guetter/api-core/interceptors';
 import { Account } from '@job-guetter/api-core/models';
@@ -16,13 +17,14 @@ export default async ({ port } = {}) => {
     basePath: '/api/v1',
     connectors: [
       MongoDB,
+      Sendgrid,
     ],
     routes: {
 
       // Demo
       'GET /general/test': {
         interceptors: [
-          AuthInterceptor(types),
+          // AuthInterceptor(types),
         ],
         handle: Demo.get,
       },
