@@ -17,7 +17,7 @@ const proxyOptions = {
 };
 
 app.use((req, res, next) => {
-  console.log('[job-guetter.devserver] Requesting ' + req.originalUrl);
+  console.log(colors.green('[job-guetter.devserver] Requesting ' + req.originalUrl));
   next();
 });
 
