@@ -4,5 +4,4 @@
 
 </div>
 
-
-![BDD](https://github.com/Job-Guetter/api/tree/master/.docs/assets/Job_guetter.png)
+![Job_guetter](https://user-images.githubusercontent.com/55241427/139235983-f2cd6813-ba81-4871-838d-daa35c41dc7f.png)
