@@ -25,7 +25,7 @@ export default async ({ port } = {}) => {
       // Demo
       'GET /general/test': {
         interceptors: [
-          // AuthInterceptor(types),
+          AuthInterceptor(types),
         ],
         handle: Demo.get,
       },
