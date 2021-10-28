@@ -2,9 +2,9 @@
 
 # Job Guetter API
 
-</div>
+[Check our complete docs](https://github.com/Job-Guetter/api/tree/master/.docs/)
 
-![BDD](Job_guetter.png)
+</div>
 
 ## Installation
 
