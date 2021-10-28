@@ -27,8 +27,7 @@ yarn install
 # add this line
 127.0.0.1 api.job-guetter.develop
 ```
-
-
+Authorize `.dev/cert.pem` with your trusted key manager for use __https__
 
 ## Usage
 

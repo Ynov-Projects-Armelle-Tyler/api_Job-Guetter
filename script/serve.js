@@ -42,9 +42,6 @@ const buildConfig = webpackConfig({
   env: 'development',
 });
 
-// auto run proxy
-argv._?.push('proxy');
-
 const compiler = webpack({
   ...buildConfig,
   entry: {
