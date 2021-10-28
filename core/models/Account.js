@@ -15,7 +15,7 @@ const Account = new mongoose.Schema({
 
   type: {
     type: String,
-    enum: ['jobber', 'recruiter', 'company'],
+    enum: ['TYPE_JOBBER', 'TYPE_RECRUITER', 'TYPE_COMPANY'],
     required: true,
   },
 
