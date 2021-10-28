@@ -17,14 +17,12 @@ const proxyOptions = {
 };
 
 app.use((req, res, next) => {
-  console.log('[job-guetter.devserver] Requesting ' + req.originalUrl);
+  console.log(colors.green('[job-guetter.devserver] Requesting ' + req.originalUrl));
   next();
 });
 
 app.use('/api/v1/general', proxy('http://localhost:8001', proxyOptions));
-
-// Additional proxy
-app.use('/*', proxy('http://localhost:8999', proxyOptions));
+app.use('/api/v1/auth', proxy('http://localhost:8002', proxyOptions));
 
 export default () => new Promise(resolve => {
   const server = app.listen(port, () => {
