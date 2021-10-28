@@ -5,17 +5,18 @@ const Account = new mongoose.Schema({
 
   email: {
     type: String,
-    default: '',
+    required: true,
   },
 
   password: {
     type: String,
-    default: '',
+    required: true,
   },
 
   type: {
     type: String,
-    default: '',
+    enum: ['jobber', 'recruiter', 'company'],
+    required: true,
   },
 
   salt: {
@@ -33,11 +34,6 @@ const Account = new mongoose.Schema({
 
   refresh_token_salt: {
     type: String,
-  },
-
-  created_at: {
-    type: Date,
-    default: Date.now,
   },
 
 }, {

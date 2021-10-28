@@ -13,7 +13,7 @@ const Company = new mongoose.Schema({
 
   name: {
     type: String,
-    default: '',
+    required: true,
   },
 
   logo: {
@@ -33,7 +33,21 @@ const Company = new mongoose.Schema({
 
   activity_area: {
     type: String,
-    default: '',
+    enum: [
+      'architecture and engineering',
+      'arts, culture and entertainment',
+      'business, management and administration',
+      'communications',
+      'community and social services',
+      'education',
+      'science and technology',
+      'agriculture',
+      'governement',
+      'law and public policy',
+      'health and medicine',
+      'sales',
+    ],
+    required: true,
   },
 
   year_birth: {
@@ -62,8 +76,10 @@ const Company = new mongoose.Schema({
   },
 
   social: {
-    type: Object,
-    default: {},
+    linkedin: String,
+    facebook: String,
+    instagram: String,
+    twitter: String,
   },
 
   created_at: {
