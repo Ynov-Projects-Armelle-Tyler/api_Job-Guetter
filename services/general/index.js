@@ -8,6 +8,7 @@ import { AuthInterceptor } from '@job-guetter/api-core/interceptors';
 import { Account } from '@job-guetter/api-core/models';
 
 import * as Demo from './Demo';
+import * as Recruiter from './Recruiter';
 
 const types = Account.AVAILABLE_TYPES;
 
@@ -27,6 +28,49 @@ export default async ({ port } = {}) => {
           // AuthInterceptor(types),
         ],
         handle: Demo.get,
+      },
+
+      // Recruiter
+      'POST /general/recruiter': {
+        interceptors: [
+          // AuthInterceptor(types),
+        ],
+        handle: Recruiter.create,
+      },
+
+      'POST /general/recruiter/:id/company/:companyId': {
+        interceptors: [
+          // AuthInterceptor(types),
+        ],
+        handle: Recruiter.ask,
+      },
+
+      'GET /general/recruiter/:id': {
+        interceptors: [
+          // AuthInterceptor(types),
+        ],
+        handle: Recruiter.get,
+      },
+
+      'GET /general/recruiter/:id/companies': {
+        interceptors: [
+          // AuthInterceptor(types),
+        ],
+        handle: Recruiter.getAllCompanies,
+      },
+
+      'PUT /general/recruiter/:id': {
+        interceptors: [
+          // AuthInterceptor(types),
+        ],
+        handle: Recruiter.update,
+      },
+
+      'DELETE /general/recruiter/:id': {
+        interceptors: [
+          // AuthInterceptor(types),
+        ],
+        handle: Recruiter.remove,
       },
 
     },
