@@ -7,7 +7,6 @@ export const PORT = number(env.PORT) || 8000;
 export const COOKIE_NAME = env.COOKIE_NAME || '_job_guetter';
 export const DOMAIN = env.DOMAIN;
 export const TEST = boolean(process.env.TEST || false);
-export const DEBUG = boolean(process.env.DEBUG || false);
 
 // Signature
 export const TOKEN_KEY = env.TOKEN_KEY;
@@ -20,3 +19,6 @@ export const MONGODB_URI = env.MONGODB_URI;
 
 // Sendgrid
 export const SENDGRID_API_KEY = env.SENDGRID_API_KEY;
+
+// Sirene
+export const SIRENE_URI = env.SIRENE_URI;
