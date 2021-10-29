@@ -1,11 +1,12 @@
 import mongoose from 'mongoose';
+import isEmail from 'validator/lib/isEmail';
 
-import isEmail from '@job-guetter/api-core/utils/validate';
 import {
   Account,
   User,
   Recruiter,
   Company,
+  JobAnnouncement,
 } from '@job-guetter/api-core/models';
 import { assert } from '@job-guetter/api-core/utils/assert';
 import {
@@ -17,10 +18,10 @@ import { omit } from '@job-guetter/api-core/utils/helpers';
 
 export const create = async (req, res) => {
   const recruiter = assert(req.body.recruiter, BadRequest('invalid_request'));
-  const email = assert(recruiter.email, BadRequest('invalid_request'), isEmail);
+  const email = assert(recruiter.email, BadRequest('email_format'), isEmail);
   const password = assert(recruiter.password, BadRequest('invalid_request'));
 
-  const exists = Account.findOne({ email });
+  const exists = await Account.findOne({ email });
 
   if (exists) {
     throw Conflict('already_exists');
@@ -57,7 +58,7 @@ export const ask = async (req, res) => {
     NotFound('user_not_found')
   );
   const company = assert(
-    await Company.findOne({ _id: companyId }),
+    await Company.findOne({ _id: companyId }).populate('account', ['email']),
     NotFound('company_not_found')
   );
 
@@ -67,7 +68,13 @@ export const ask = async (req, res) => {
     status: false,
   }).save();
 
-  // TODO: Send email to company for ask with email
+  req.get('Sendgrid').send({
+    from: 'tyler.escolano@ynov.com',
+    to: company.account.email,
+    subject: 'Recruiter break his link',
+    body: `<p>We are sorry but recruiter ${user.first_name} break ` +
+      'his link with you</p>',
+  });
 
   res.json({ asked: true });
 };
@@ -152,11 +159,24 @@ export const remove = async (req, res) => {
     NotFound('accounts_not_found')
   );
 
-  const recruiters = await Recruiter.find({ user });
+  const recruiters = await Recruiter
+    .find({ user })
+    .populate('company', ['account']);
 
   if (recruiters) {
     for (const recruiter of recruiters) {
-      const companyEmail = recruiter.company_email;
+      const companyEmail = recruiter.company.account.email;
+
+      const jobAnnouncements = await JobAnnouncement.find({ recruiter });
+
+      const jobAnnInfos = jobAnnouncements.map(async ann => {
+        ann.deleted = true;
+        await ann.save();
+
+        return { id: ann._id, name: ann.name };
+      });
+
+      // // TODO: use jobAnnInfos to make list of job applyments to send
 
       req.get('Sendgrid').send({
         from: 'tyler.escolano@ynov.com',
@@ -169,8 +189,6 @@ export const remove = async (req, res) => {
       await recruiter.remove();
     }
   }
-
-  // TODO: Que faire des Job_Announcements et des Job_Applyments ???
 
   await user.save();
   await account.save();
