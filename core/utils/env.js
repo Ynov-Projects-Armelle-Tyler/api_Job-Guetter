@@ -7,6 +7,7 @@ export const PORT = number(env.PORT) || 8000;
 export const COOKIE_NAME = env.COOKIE_NAME || '_job_guetter';
 export const DOMAIN = env.DOMAIN;
 export const TEST = boolean(process.env.TEST || false);
+export const DEBUG = boolean(process.env.DEBUG || false);
 
 // Signature
 export const TOKEN_KEY = env.TOKEN_KEY;

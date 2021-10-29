@@ -9,7 +9,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
-import { DefaultsInterceptor } from './interceptors';
+import { ErrorsInterceptor, DefaultsInterceptor } from './interceptors';
 import { TEST } from './utils/env';
 import { catchError } from './utils/errors';
 
@@ -69,6 +69,9 @@ export default async ({
   router.route(`/${serviceName}/health`).get((req, res) => {
     res.send('OK');
   });
+
+  router.use(ErrorsInterceptor);
+  process.on('unhandledRejection', ErrorsInterceptor);
 
   app.use(basePath, router);
 
