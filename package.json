@@ -70,7 +70,7 @@
     "filesize": "6.3.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "4.13.21",
-    "node-fetch": "2.6.1",
+    "node-fetch": "2.6.5",
     "prompts": "2.4.1",
     "randomstring": "1.2.1",
     "request": "2.88.2",
