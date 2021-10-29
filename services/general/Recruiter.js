@@ -68,7 +68,7 @@ export const ask = async (req, res) => {
     status: false,
   }).save();
 
-  req.get('Sendgrid').send({
+  req.app.get('Sendgrid').send({
     from: 'tyler.escolano@ynov.com',
     to: company.account.email,
     subject: 'Recruiter break his link',
@@ -188,7 +188,7 @@ export const remove = async (req, res) => {
 
       // // TODO: use jobAnnInfos to make list of job applyments to send
 
-      req.get('Sendgrid').send({
+      req.app.get('Sendgrid').send({
         from: 'tyler.escolano@ynov.com',
         to: companyEmail,
         subject: 'Recruiter break his link',
@@ -200,8 +200,8 @@ export const remove = async (req, res) => {
     }
   }
 
-  await user.save();
-  await account.save();
+  await user.remove();
+  await account.remove();
 
   res.json({ deleted: true });
 };
