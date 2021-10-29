@@ -20,7 +20,10 @@ export const generate = async (req, res) => {
   const email = assert(req.body.email, BadRequest('invalid_request'), isEmail);
   const password = assert(req.body.password, BadRequest('invalid_request'));
 
-  const user = await await Account.findOne({ email });
+  const user = assert(
+    await Account.findOne({ email }),
+    NotFound('account_not_found')
+  );
   const cmp = await compare(password, user.password);
 
   if (!cmp) {
