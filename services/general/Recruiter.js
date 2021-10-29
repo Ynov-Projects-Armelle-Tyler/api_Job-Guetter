@@ -121,23 +121,22 @@ export const update = async (req, res) => {
     NotFound('user_not_found')
   );
 
-  const account = await Account.findOne({ email });
+  let account = await Account.findOne({ email });
 
-  if (user.account._id.toString() !== account._id.toString()) {
+  if (account && user.account._id.toString() !== account._id.toString()) {
     throw Conflict('already_exists');
   }
 
   if (!account) {
     const old = await Account.findOne({ _id: user.account._id });
 
-    const newAccount = await Account.from({
+    account = await Account.from({
       email,
       password,
       type: Account.TYPE_RECRUITER,
     });
 
     await old.remove();
-    await newAccount.save();
   } else {
     Object.assign(account, {
       email,
@@ -147,6 +146,7 @@ export const update = async (req, res) => {
 
   Object.assign(user, {
     ...omit(recruiter, ['email', 'password']),
+    account,
   });
 
   await account.save();
