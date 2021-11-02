@@ -104,7 +104,7 @@ export const getAllCompanies = async (req, res) => {
     .find({ user })
     .populate('company', ['name', 'logo']);
 
-  const companies = recruiters.map(r => r.comapny);
+  const companies = recruiters.map(r => r.company);
 
   res.json({ companies });
 };
