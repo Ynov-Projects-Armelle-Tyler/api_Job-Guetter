@@ -10,12 +10,12 @@ const User = new mongoose.Schema({
 
   first_name: {
     type: String,
-    default: '',
+    required: true,
   },
 
   last_name: {
     type: String,
-    default: '',
+    required: true,
   },
 
   created_at: {

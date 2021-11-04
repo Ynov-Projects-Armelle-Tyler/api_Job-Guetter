@@ -12,6 +12,10 @@ const Recruiter = new mongoose.Schema({
     ref: 'Company',
   },
 
+  company_email: {
+    type: String,
+  },
+
   status: {
     type: Boolean,
     default: false,

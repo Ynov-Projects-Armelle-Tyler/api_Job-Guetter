@@ -5,16 +5,18 @@ const JobAnnouncement = new mongoose.Schema({
   company: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
+    required: true,
   },
 
   recruiter: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Recruiter',
+    required: false,
   },
 
   name: {
     type: String,
-    default: '',
+    required: true,
   },
 
   activity_field: {
@@ -24,7 +26,8 @@ const JobAnnouncement = new mongoose.Schema({
 
   contract_type: {
     type: String,
-    default: '',
+    enum: ['CDI', 'CDD', 'freelance'],
+    required: true,
   },
 
   localisation: {

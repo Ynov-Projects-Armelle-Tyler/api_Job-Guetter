@@ -83,6 +83,16 @@ Example:
 yarn list-services --json
 ```
 
+### `yarn configure`
+
+Now it's fo restore your dev database.
+
+Example:
+
+```bash
+yarn configure
+```
+
 ### `yarn serve <service...>`
 
 Run & watch for changes one or more services on a local dev server.

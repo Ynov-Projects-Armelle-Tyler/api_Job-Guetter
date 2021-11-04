@@ -2,13 +2,11 @@ import { Server } from '@job-guetter/api-core';
 
 import {
   MongoDB,
+  Sendgrid,
+  SireneAPI,
 } from '@job-guetter/api-core/connectors';
-import { AuthInterceptor } from '@job-guetter/api-core/interceptors';
-import { Account } from '@job-guetter/api-core/models';
 
-import * as Demo from './Demo';
-
-const types = Account.AVAILABLE_TYPES;
+import routes from './routes';
 
 export default async ({ port } = {}) => {
   const app = await Server({
@@ -16,18 +14,10 @@ export default async ({ port } = {}) => {
     basePath: '/api/v1',
     connectors: [
       MongoDB,
+      Sendgrid,
+      SireneAPI,
     ],
-    routes: {
-
-      // Demo
-      'GET /general/test': {
-        interceptors: [
-          AuthInterceptor(types),
-        ],
-        handle: Demo.get,
-      },
-
-    },
+    routes: { ...routes },
   });
 
   port = __DEV__ ? 8001 : port;

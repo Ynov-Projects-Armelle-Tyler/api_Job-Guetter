@@ -22,10 +22,10 @@ const Jobber = new mongoose.Schema({
     default: '',
   },
 
-  skills: {
+  skills: [{
     type: String,
     default: '',
-  },
+  }],
 
   description: {
     type: String,
