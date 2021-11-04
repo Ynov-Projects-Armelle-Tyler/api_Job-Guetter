@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+/*eslint-disable no-unused-vars*/
 import {
   Account,
   Recruiter,
