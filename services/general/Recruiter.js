@@ -189,7 +189,9 @@ export const remove = async (req, res) => {
         deleted: false,
       });
 
-      const jobAnnInfos = jobAnnouncements.map(async ann => {
+      // TODO: remove eslint disable && use jobAnnInfos for emails
+      /*eslint-disable no-unused-vars*/
+      const jobAnnInfos = jobAnnouncements?.map(async ann => {
         ann.deleted = true;
         ann.recruiter = undefined;
         await ann.save();
