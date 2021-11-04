@@ -171,22 +171,31 @@ export const remove = async (req, res) => {
 
   const recruiters = await Recruiter
     .find({ user })
-    .populate('company', ['account']);
+    .populate({
+      path: 'company',
+      select: ['name', 'account'],
+      populate: {
+        path: 'account',
+        select: ['email', 'type'],
+      },
+    });
 
   if (recruiters) {
     for (const recruiter of recruiters) {
       const companyEmail = recruiter.company.account.email;
 
-      const jobAnnouncements = await JobAnnouncement.find({ recruiter });
+      const jobAnnouncements = await JobAnnouncement.find({
+        recruiter,
+        deleted: false,
+      });
 
       const jobAnnInfos = jobAnnouncements.map(async ann => {
         ann.deleted = true;
+        ann.recruiter = undefined;
         await ann.save();
 
-        return { id: ann._id, name: ann.name };
+        return { _id: ann._id, name: ann.name };
       });
-
-      // // TODO: use jobAnnInfos to make list of job applyments to send
 
       req.app.get('Sendgrid').send({
         from: 'tyler.escolano@ynov.com',

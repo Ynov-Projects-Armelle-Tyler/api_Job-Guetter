@@ -1,4 +1,7 @@
-import { AuthInterceptor } from '@job-guetter/api-core/interceptors';
+import {
+  AuthInterceptor,
+  IdentityInterceptor,
+} from '@job-guetter/api-core/interceptors';
 
 import * as Company from '../Company';
 
@@ -27,7 +30,8 @@ export default {
 
   'GET /general/company/:id': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor(['TYPE_COMPANY']),
+      IdentityInterceptor,
     ],
     handle: Company.get,
   },

@@ -2,7 +2,7 @@ import { compare } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken';
 
 import isEmail from '@job-guetter/api-core/utils/validate';
-import { Account } from '@job-guetter/api-core/models';
+import { Account, Company, User } from '@job-guetter/api-core/models';
 import { assert } from '@job-guetter/api-core/utils/assert';
 import {
   BadRequest,
@@ -20,28 +20,45 @@ export const generate = async (req, res) => {
   const email = assert(req.body.email, BadRequest('invalid_request'), isEmail);
   const password = assert(req.body.password, BadRequest('invalid_request'));
 
-  const user = assert(
+  const account = assert(
     await Account.findOne({ email }),
     NotFound('account_not_found')
   );
-  const cmp = await compare(password, user.password);
+  const cmp = await compare(password, account.password);
 
   if (!cmp) {
     throw Unauthorized('access_denied');
   }
 
-  const accessToken = await sign({ user_id: user._id, email }, TOKEN_KEY,
-    { expiresIn: TOKEN_NORMAL_EXPIRY });
+  const user = account.type === 'TYPE_COMPANY'
+    ? assert(
+      await Company.findOne({ account }),
+      NotFound('company_not_found')
+    )
+    : assert(
+      await User.findOne({ account }),
+      NotFound('account_not_found')
+    );
 
-  const salt = await user.genSalt();
+  const accessToken = await sign(
+    {
+      user_id: user._id,
+      type: account.type,
+      email,
+    },
+    TOKEN_KEY,
+    { expiresIn: TOKEN_NORMAL_EXPIRY }
+  );
+
+  const salt = await account.genSalt();
 
   const refreshToken = await sign({ salt: salt }, REFRESH_TOKEN_KEY,
     { expiresIn: TOKEN_EXTENDED_EXPIRY });
 
-  user.access_token = accessToken;
-  user.refresh_token = refreshToken;
-  user.refresh_token_salt = salt;
-  await user.save();
+  account.access_token = accessToken;
+  account.refresh_token = refreshToken;
+  account.refresh_token_salt = salt;
+  await account.save();
 
   res.json({
     accessToken: accessToken,
