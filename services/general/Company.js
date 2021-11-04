@@ -152,7 +152,7 @@ export const updateRecruiters = async (req, res) => {
     val => mongoose.Types.ObjectId.isValid(val));
   const accept = assert(req.body.accept, BadRequest('invalid_request'));
 
-  if (accept === 'true') {
+  if (accept) {
     assert(
       await Recruiter.updateOne(
         { company: companyId, recruiter: recruiterId },
