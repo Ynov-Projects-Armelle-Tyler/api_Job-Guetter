@@ -71,13 +71,14 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "4.13.21",
     "node-fetch": "2.6.5",
+    "ora": "5.4.1",
     "prompts": "2.4.1",
     "randomstring": "1.2.1",
     "request": "2.88.2",
     "rimraf": "3.0.2",
     "slugify": "1.5.3",
     "uuid": "^8.3.2",
-    "validator": "13.6.0",
+    "validator": "13.7.0",
     "yargs": "17.0.1"
   },
   "scripts": {
@@ -86,7 +87,8 @@
     "serve": "node ./script/serve.js",
     "build": "node ./script/build.js",
     "build:all": "yarn build --all",
-    "list-services": "node ./script/list-services.js"
+    "list-services": "node ./script/list-services.js",
+    "configure": "node ./script/configure.js"
   },
   "husky": {
     "hooks": {
