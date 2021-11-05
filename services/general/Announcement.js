@@ -22,7 +22,7 @@ export const create = async (req, res) => {
   const isCompanyRecruiter = await Recruiter.findOne({ recruiter, company });
 
   if (!isCompanyRecruiter) {
-    Unauthorized('not_allowed')
+    Unauthorized('not_allowed');
   }
 
   const announcement = await Announcement.from({ announcementInfo });
