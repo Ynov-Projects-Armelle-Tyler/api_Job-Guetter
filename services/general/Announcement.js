@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
-import isEmail from 'validator/lib/isEmail';
 
 import {
-  Account,
   Recruiter,
   Announcement,
+  Company,
 } from '@job-guetter/api-core/models';
 import { assert } from '@job-guetter/api-core/utils/assert';
 import {
@@ -13,25 +12,14 @@ import {
   Unauthorized
 } from '@job-guetter/api-core/utils/errors';
 
-company,
-recruiter,
-name,
-activity_field,
-contract_type,
-localisation,
-job_start,
-job_description,
-missions,
-profile,
-salary,
-
-
-
 export const create = async (req, res) => {
-  const announcementInfo = assert(req.body.announcement, BadRequest('invalid_request'));
+  const announcementInfo = assert(req.body.announcement,
+    BadRequest('invalid_request')
+  );
   const recruiter = req.decoded.id;
+  const company = await Company.findOne({ name: announcementInfo.company });
 
-  const isCompanyRecruiter = await Recruiter.findOne({ recruiter, company })
+  const isCompanyRecruiter = await Recruiter.findOne({ recruiter, company });
 
   if (!isCompanyRecruiter) {
     Unauthorized('not_allowed')
@@ -45,8 +33,10 @@ export const create = async (req, res) => {
 };
 
 export const get = async (req, res) => {
-  const announcementId = assert(req.params.id, BadRequest('wrong_announcement_id'),
-    val => mongoose.Types.ObjectId.isValid(val));
+  const announcementId = assert(req.params.id,
+    BadRequest('wrong_announcement_id'),
+    val => mongoose.Types.ObjectId.isValid(val)
+  );
 
   const announcement = assert(
     await Announcement.findOne({ _id: announcementId }),
@@ -62,12 +52,19 @@ export const getAll = async (req, res) => {
 };
 
 export const update = async (req, res) => {
-  const announcementId = assert(req.params.id, BadRequest('wrong_announcement_id'),
-    val => mongoose.Types.ObjectId.isValid(val));
-  const announcementInfo = assert(req.body.announcement, BadRequest('invalid_request'));
+  const announcementId = assert(req.params.id,
+    BadRequest('wrong_announcement_id'),
+    val => mongoose.Types.ObjectId.isValid(val)
+  );
+  const announcementInfo = assert(req.body.announcement,
+    BadRequest('invalid_request')
+  );
 
   const announcement = assert(
-    await Announcement.findOne({ _id: announcementId, recruiter: req.decoded._id }),
+    await Announcement.findOne({
+      _id: announcementId,
+      recruiter: req.decoded._id
+    }),
     NotFound('announcement_not_found')
   );
 
@@ -79,8 +76,10 @@ export const update = async (req, res) => {
 };
 
 export const remove = async (req, res) => {
-  const announcementId = assert(req.params.id, BadRequest('wrong_announcement_id'),
-    val => mongoose.Types.ObjectId.isValid(val));
+  const announcementId = assert(req.params.id,
+    BadRequest('wrong_announcement_id'),
+    val => mongoose.Types.ObjectId.isValid(val)
+  );
 
   assert(
     await Announcement.findOneAndUpdate({ _id: announcementId, deleted: true }),
