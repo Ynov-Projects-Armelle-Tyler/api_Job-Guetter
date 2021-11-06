@@ -10,6 +10,18 @@ import {
   User,
 } from '@job-guetter/api-core/models';
 import { Forbidden } from '@job-guetter/api-core/utils/errors';
+import { load } from '@job-guetter/api-core/views';
+
+export const send = async (req, res) => {
+  req.app.get('Sendgrid').send({
+    from: 'tyler.escolano@ynov.com',
+    to: 'escolano.tyler@gmail.com',
+    subject: 'Recruiter break his link',
+    body: load('emails/demo', { company: 'Ynov' }),
+  });
+
+  res.json({ send: true });
+};
 
 export const feed = async (req, res) => {
 
