@@ -14,7 +14,10 @@ import { load } from '@job-guetter/api-core/views';
 
 export const send = async (req, res) => {
   req.app.get('Sendgrid').send({
-    from: 'tyler.escolano@ynov.com',
+    from: {
+      email: 'tyler.escolano@ynov.com',
+      name: 'Job Guetter',
+    },
     to: 'escolano.tyler@gmail.com',
     subject: 'Recruiter break his link',
     body: load('emails/demo', { company: 'Ynov' }),
