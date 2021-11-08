@@ -9,7 +9,7 @@ import { assert } from '@job-guetter/api-core/utils/assert';
 import {
   BadRequest,
   NotFound,
-  Unauthorized
+  Unauthorized,
 } from '@job-guetter/api-core/utils/errors';
 
 export const create = async (req, res) => {
@@ -63,7 +63,7 @@ export const update = async (req, res) => {
   const announcement = assert(
     await Announcement.findOne({
       _id: announcementId,
-      recruiter: req.decoded._id
+      recruiter: req.decoded._id,
     }),
     NotFound('announcement_not_found')
   );
