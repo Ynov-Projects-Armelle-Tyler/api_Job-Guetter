@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const JobAnnouncement = new mongoose.Schema({
+const Announcement = new mongoose.Schema({
 
   company: {
     type: mongoose.Schema.Types.ObjectId,
@@ -82,8 +82,8 @@ const JobAnnouncement = new mongoose.Schema({
   usePushEach: true,
 });
 
-JobAnnouncement.statics.from = function (opts) {
+Announcement.statics.from = function (opts) {
   return new this(opts);
 };
 
-export default mongoose.model('JobAnnouncement', JobAnnouncement);
+export default mongoose.model('Announcement', Announcement);
