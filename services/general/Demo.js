@@ -13,6 +13,11 @@ import { Forbidden } from '@job-guetter/api-core/utils/errors';
 import { load } from '@job-guetter/api-core/views';
 
 export const send = async (req, res) => {
+
+  if (!__DEV__) {
+    throw Forbidden();
+  }
+
   req.app.get('Sendgrid').send({
     from: {
       email: 'tyler.escolano@ynov.com',
