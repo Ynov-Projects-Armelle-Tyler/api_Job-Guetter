@@ -13,14 +13,14 @@ export default {
 
   'GET /general/jobber': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor(['TYPE_JOBBER']),
     ],
     handle: Jobber.getAll,
   },
 
   'GET /general/jobber/:id': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor(['TYPE_JOBBER']),
     ],
     handle: Jobber.get,
   },

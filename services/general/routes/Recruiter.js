@@ -1,4 +1,7 @@
-import { AuthInterceptor } from '@job-guetter/api-core/interceptors';
+import {
+  AuthInterceptor,
+  IdentityInterceptor,
+} from '@job-guetter/api-core/interceptors';
 
 import * as Recruiter from '../Recruiter';
 
@@ -20,7 +23,8 @@ export default {
 
   'GET /general/recruiter/:id': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor('TYPE_RECRUITER'),
+      IdentityInterceptor,
     ],
     handle: Recruiter.get,
   },

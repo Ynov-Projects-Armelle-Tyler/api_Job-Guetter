@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+/*eslint-disable no-unused-vars*/
 import {
   Account,
   Recruiter,
@@ -9,6 +10,26 @@ import {
   User,
 } from '@job-guetter/api-core/models';
 import { Forbidden } from '@job-guetter/api-core/utils/errors';
+import { load } from '@job-guetter/api-core/views';
+
+export const send = async (req, res) => {
+
+  if (!__DEV__) {
+    throw Forbidden();
+  }
+
+  req.app.get('Sendgrid').send({
+    from: {
+      email: 'tyler.escolano@ynov.com',
+      name: 'Job Guetter',
+    },
+    to: 'escolano.tyler@gmail.com',
+    subject: 'Recruiter break his link',
+    body: load('emails/demo', { company: 'Ynov' }),
+  });
+
+  res.json({ send: true });
+};
 
 export const feed = async (req, res) => {
 

@@ -14,3 +14,14 @@
 ## [JavaScript Coding Styles](https://github.com/airbnb/javascript)
 
 ## [Database](https://github.com/Job-Guetter/api/tree/master/.docs/DATABASE.md)
+
+#### Export & Import
+
+Manually export database
+```bash
+mongodump --db job_guetter_api --gzip --archive=./.docs/database_schema/dev/db.tmp.tar.gz
+```
+Manually import database
+```bash
+mongorestore --gzip --noIndexRestore --archive=./.docs/database_schema/dev/db.tmp.tar.gz
+```
