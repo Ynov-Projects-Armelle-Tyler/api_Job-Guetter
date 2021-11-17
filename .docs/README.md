@@ -4,10 +4,7 @@
 
 </div>
 
-## Env files
-- [dev](https://github.com/Job-Guetter/api/tree/master/.docs/env/dev.md)
-- [test]()
-- [prod]()
+## [Env files](https://github.com/Job-Guetter/api/tree/master/.docs/ENV.md)
 
 ## [Commits & branches & struff](https://github.com/Job-Guetter/api/tree/master/.docs/COMMIT_BRANCHES_STUFF.md)
 
@@ -15,13 +12,5 @@
 
 ## [Database](https://github.com/Job-Guetter/api/tree/master/.docs/DATABASE.md)
 
-#### Export & Import
+## [Redis](https://github.com/Job-Guetter/api/tree/master/.docs/REDIS.md)
 
-Manually export database
-```bash
-mongodump --db job_guetter_api --gzip --archive=./.docs/database_schema/dev/db.tmp.tar.gz
-```
-Manually import database
-```bash
-mongorestore --gzip --noIndexRestore --archive=./.docs/database_schema/dev/db.tmp.tar.gz
-```

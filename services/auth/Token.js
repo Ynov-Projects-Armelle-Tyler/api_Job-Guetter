@@ -16,7 +16,7 @@ import {
   TOKEN_EXTENDED_EXPIRY,
 } from '@job-guetter/api-core/utils/env';
 
-export const generate = async (req, res) => {
+const grantWithPassword = async (req, res) => {
   const email = assert(req.body.email, BadRequest('invalid_request'), isEmail);
   const password = assert(req.body.password, BadRequest('invalid_request'));
 
@@ -64,6 +64,16 @@ export const generate = async (req, res) => {
     accessToken: accessToken,
     refreshToken: refreshToken,
     tokenType: 'bearer',
+  });
+};
+
+export const login = async (req, res, next) => {
+  return req.app.get('Brute').prevent(req, res, async () => {
+    try {
+      await grantWithPassword(req, res);
+    } catch (e) {
+      next(e, req, res, next);
+    }
   });
 };
 

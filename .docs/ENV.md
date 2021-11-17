@@ -1,3 +1,5 @@
+## Dev env file :
+
 ```text
 #############
 # DEV
@@ -16,5 +18,15 @@ TOKEN_EXTENDED_EXPIRY="30d"
 
 # MongoDB
 MONGODB_URI="mongodb://localhost:27017/job_guetter_api"
+
+# Redis
+REDIS_URL="localhost"
+REDIS_PORT=6379
+
+# Sendgrid
+SENDGRID_API_KEY="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"
+
+# Sirene API
+SIRENE_URI="https://entreprise.data.gouv.fr/api/sirene/v1/siren/"
 
 ```
