@@ -25,13 +25,6 @@ export default {
     handle: Applyment.get,
   },
 
-  'PUT /general/applyment/:id': {
-    interceptors: [
-      // AuthInterceptor(types),
-    ],
-    handle: Applyment.update,
-  },
-
   'DELETE /general/applyment/:id': {
     interceptors: [
       // AuthInterceptor(types),

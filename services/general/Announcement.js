@@ -54,6 +54,7 @@ export const get = async (req, res) => {
 
 export const getAll = async (req, res) => {
   const announcements = await Announcement.find();
+
   res.json({ announcements });
 };
 
