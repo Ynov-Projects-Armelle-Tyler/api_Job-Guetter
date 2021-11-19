@@ -5,7 +5,6 @@ import { assert } from '@job-guetter/api-core/utils/assert';
 import {
   BadRequest,
   NotFound,
-  Unauthorized,
 } from '@job-guetter/api-core/utils/errors';
 
 export const create = async (req, res) => {

@@ -11,8 +11,8 @@ import {
   NotFound,
   Unauthorized,
 } from '@job-guetter/api-core/utils/errors';
+
 import Applyment from './routes/Applyment';
-import { apply } from 'ramda';
 
 export const create = async (req, res) => {
   const announcementInfo = assert(req.body.announcement,
