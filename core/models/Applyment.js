@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const JobApplyement = new mongoose.Schema({
+const JobApplyment = new mongoose.Schema({
 
   jobber: {
     type: mongoose.Schema.Types.ObjectId,
@@ -38,8 +38,8 @@ const JobApplyement = new mongoose.Schema({
   },
 });
 
-JobApplyement.statics.from = function (opts) {
+JobApplyment.statics.from = function (opts) {
   return new this(opts);
 };
 
-export default mongoose.model('JobApplyement', JobApplyement);
+export default mongoose.model('JobApplyment', JobApplyment);
