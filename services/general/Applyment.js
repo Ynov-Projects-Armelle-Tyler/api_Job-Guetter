@@ -1,15 +1,10 @@
 import mongoose from 'mongoose';
 
-import {
-  Recruiter,
-  Applyment,
-  Company,
-} from '@job-guetter/api-core/models';
+import { Applyment } from '@job-guetter/api-core/models';
 import { assert } from '@job-guetter/api-core/utils/assert';
 import {
   BadRequest,
   NotFound,
-  Unauthorized,
 } from '@job-guetter/api-core/utils/errors';
 
 export const create = async (req, res) => {
@@ -56,7 +51,7 @@ export const update = async (req, res) => {
   const applyment = assert(
     await Applyment.findOne({
       _id: applymentId,
-      recruiter: req.decoded._id
+      recruiter: req.decoded._id,
     }),
     NotFound('applyment_not_found')
   );
