@@ -7,9 +7,9 @@ const Applyment = new mongoose.Schema({
     ref: 'Jobber',
   },
 
-  job_announcement: {
+  announcement: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'JobAnnouncement',
+    ref: 'Announcement',
   },
 
   cv: {
