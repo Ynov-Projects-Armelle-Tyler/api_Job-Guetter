@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 
-import {
-  Recruiter,
-  Applyment,
-  Company,
-} from '@job-guetter/api-core/models';
+import { Applyment, Jobber } from '@job-guetter/api-core/models';
 import { assert } from '@job-guetter/api-core/utils/assert';
 import {
   BadRequest,
@@ -16,13 +12,16 @@ export const create = async (req, res) => {
   const applymentInfo = assert(req.body.applyment,
     BadRequest('invalid_request')
   );
-  const jobber = req.decoded.id;
 
-  const applyment = await Applyment.from({ jobber, applymentInfo });
+  const jobber = await Jobber.findOne({ _id: req.decoded.id });
 
-  await applyment.save();
+  if (jobber) {
+    const applyment = await Applyment.from({ jobber, applymentInfo });
 
-  res.json({ created: true });
+    await applyment.save();
+
+    res.json({ created: true });
+  }
 };
 
 export const get = async (req, res) => {
@@ -32,52 +31,42 @@ export const get = async (req, res) => {
   );
 
   const applyment = assert(
-    await Applyment.findOne({ _id: applymentId }),
+    await Applyment.findOne({ _id: applymentId }).populate('Announcement'),
     NotFound('applyment_not_found')
   );
 
-  res.json({ applyment });
+  const user = req.decoded.id;
+
+  if (Applyment.jobber === user || Applyment.announcement.recruiter === user) {
+    res.json({ applyment });
+  } else {
+    throw Unauthorized('access_denied');
+  }
 };
 
 export const getAll = async (req, res) => {
-  const companies = await Applyment.find();
-  res.json({ companies });
+  const applyments = await Applyment.find({ jobber: req.decoded.id });
+
+  res.json({ applyments });
 };
 
-export const update = async (req, res) => {
+export const remove = async(req, res) => {
   const applymentId = assert(req.params.id,
     BadRequest('wrong_applyment_id'),
     val => mongoose.Types.ObjectId.isValid(val)
-  );
-  const applymentInfo = assert(req.body.applyment,
-    BadRequest('invalid_request')
   );
 
   const applyment = assert(
     await Applyment.findOne({
       _id: applymentId,
-      recruiter: req.decoded._id
+      jobber: req.decoded.id,
     }),
     NotFound('applyment_not_found')
   );
 
-  Object.assign(applyment, applymentInfo);
+  if (applyment) {
+    await Applyment.deleteOne({ _id: applymentId });
 
-  await applyment.save();
-
-  res.json({ updated: true });
-};
-
-export const remove = async (req, res) => {
-  const applymentId = assert(req.params.id,
-    BadRequest('wrong_applyment_id'),
-    val => mongoose.Types.ObjectId.isValid(val)
-  );
-
-  assert(
-    await Applyment.findOneAndUpdate({ _id: applymentId, deleted: true }),
-    NotFound('applyment_not_found')
-  );
-
-  res.json({ deleted: true });
+    res.json({ deleted: true });
+  }
 };
