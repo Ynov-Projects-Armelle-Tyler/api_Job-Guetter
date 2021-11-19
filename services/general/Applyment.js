@@ -5,6 +5,7 @@ import { assert } from '@job-guetter/api-core/utils/assert';
 import {
   BadRequest,
   NotFound,
+  Unauthorized,
 } from '@job-guetter/api-core/utils/errors';
 
 export const create = async (req, res) => {
@@ -49,7 +50,7 @@ export const getAll = async (req, res) => {
   res.json({ applyments });
 };
 
-export const remove = async(req, res) => {
+export const remove = async (req, res) => {
   const applymentId = assert(req.params.id,
     BadRequest('wrong_applyment_id'),
     val => mongoose.Types.ObjectId.isValid(val)
