@@ -81,9 +81,7 @@ export const getAll = async (req, res) => {
 //       .populate({ path: 'user', populate: { path: 'account' } }),
 //     NotFound('user_not_found')
 //   );
-
-
-
+//
 //   Object.assign(user, {
 //     ...omit(jobber, ['email', 'password']),
 //     account,

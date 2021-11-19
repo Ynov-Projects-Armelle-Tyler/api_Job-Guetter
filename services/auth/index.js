@@ -1,6 +1,6 @@
 import { Server } from '@job-guetter/api-core';
 
-import { MongoDB } from '@job-guetter/api-core/connectors';
+import { MongoDB, Brute, Redis } from '@job-guetter/api-core/connectors';
 
 import * as Token from './Token';
 
@@ -10,13 +10,15 @@ export default async ({ port } = {}) => {
     basePath: '/api/v1',
     connectors: [
       MongoDB,
+      Redis,
+      Brute,
     ],
     routes: {
 
       // Token
       'POST /auth/login': {
         interceptors: [],
-        handle: Token.generate,
+        handle: Token.login,
       },
 
       // Token

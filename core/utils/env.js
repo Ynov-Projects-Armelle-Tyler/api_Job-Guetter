@@ -7,6 +7,7 @@ export const PORT = number(env.PORT) || 8000;
 export const COOKIE_NAME = env.COOKIE_NAME || '_job_guetter';
 export const DOMAIN = env.DOMAIN;
 export const TEST = boolean(process.env.TEST || false);
+export const MAX_REQUEST_RETRIES = number(env.MAX_REQUEST_RETRIES) || 5;
 
 // Signature
 export const TOKEN_KEY = env.TOKEN_KEY;
@@ -16,6 +17,8 @@ export const TOKEN_EXTENDED_EXPIRY = env.TOKEN_EXTENDED_EXPIRY;
 
 // Databases
 export const MONGODB_URI = env.MONGODB_URI;
+export const REDIS_URL = env.REDIS_URL;
+export const REDIS_PORT = env.REDIS_PORT;
 
 // Sendgrid
 export const SENDGRID_API_KEY = env.SENDGRID_API_KEY;
