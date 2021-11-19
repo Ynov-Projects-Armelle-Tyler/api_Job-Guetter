@@ -25,6 +25,13 @@ export default {
     handle: Announcement.get,
   },
 
+  'GET /general/announcement/:id/applyment': {
+    interceptors: [
+      // AuthInterceptor(types),
+    ],
+    handle: Announcement.getAllApplyment,
+  },
+
   'PUT /general/announcement/:id': {
     interceptors: [
       // AuthInterceptor(types),
@@ -37,12 +44,5 @@ export default {
       // AuthInterceptor(types),
     ],
     handle: Announcement.archive,
-  },
-
-  'DELETE /general/announcement/:id': {
-    interceptors: [
-      // AuthInterceptor(types),
-    ],
-    handle: Announcement.remove,
   },
 };

@@ -11,6 +11,8 @@ import {
   NotFound,
   Unauthorized,
 } from '@job-guetter/api-core/utils/errors';
+import Applyment from './routes/Applyment';
+import { apply } from 'ramda';
 
 export const create = async (req, res) => {
   const announcementInfo = assert(req.body.announcement,
@@ -95,4 +97,23 @@ export const archive = async (req, res) => {
   );
 
   res.json({ deleted: true });
+};
+
+export const getAllApplyment = async (req, res) => {
+  const announcementId = assert(req.params.id,
+    BadRequest('wrong_announcement_id'),
+    val => mongoose.Types.ObjectId.isValid(val)
+  );
+
+  const announcement = assert(
+    await Announcement.findOne({
+      _id: announcementId,
+      recruiter: req.decoded._id,
+    }),
+    NotFound('announcement_not_found')
+  );
+
+  const applyments = await Applyment.find({ announcement });
+
+  res.json({ applyments });
 };
