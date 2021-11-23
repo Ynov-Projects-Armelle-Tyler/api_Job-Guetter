@@ -31,7 +31,8 @@ export default {
 
   'GET /general/recruiter/:id/companies': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor('TYPE_RECRUITER'),
+      IdentityInterceptor,
     ],
     handle: Recruiter.getAllCompanies,
   },
