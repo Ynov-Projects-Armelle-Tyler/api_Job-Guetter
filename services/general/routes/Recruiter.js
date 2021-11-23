@@ -39,7 +39,8 @@ export default {
 
   'PUT /general/recruiter/:id': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor('TYPE_RECRUITER'),
+      IdentityInterceptor,
     ],
     handle: Recruiter.update,
   },

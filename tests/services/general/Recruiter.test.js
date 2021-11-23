@@ -15,6 +15,7 @@ import {
   mockAccount,
   mockData,
 } from '../../utils/mocks';
+import { generateEmail, generateId } from '../../utils/defaults';
 
 jest.mock('node-fetch', () => jest.fn());
 
@@ -238,6 +239,124 @@ describe('@job-guetter/api-general/Recruiter', () => {
     });
 
   });
+
+  describe('PUT /general/recruiter/:id', () => {
+
+    test('should udpate recruiter', async () => {
+      const data = await mockAccount('TYPE_RECRUITER');
+      const token = await mockToken(data);
+      const email = generateEmail();
+
+      const res = await put(server, {
+        url: `/api/v1/general/recruiter/${data.user._id}/`,
+        body: {
+          recruiter: {
+            email,
+            password: generateId(),
+            first_name: 'Patt updated',
+            last_name: 'Rik update',
+          },
+        },
+        headers: {
+          ...getAuthorizationHeaders(token.access_token),
+        },
+      });
+
+      expect(res.user).toBeDefined();
+      expect(res.user.account.email).toBe(email);
+
+      await data.clean();
+    });
+
+    test('should udpate recruiter with same email', async () => {
+      const data = await mockAccount('TYPE_RECRUITER');
+      const token = await mockToken(data);
+      const email = data.account.email;
+
+      const res = await put(server, {
+        url: `/api/v1/general/recruiter/${data.user._id}/`,
+        body: {
+          recruiter: {
+            email,
+            password: generateId(),
+            first_name: 'Patt updated',
+            last_name: 'Rik update',
+          },
+        },
+        headers: {
+          ...getAuthorizationHeaders(token.access_token),
+        },
+      });
+
+      expect(res.user).toBeDefined();
+      expect(res.user.account.email).toBe(email);
+
+      await data.clean();
+    });
+
+    test('should udpate recruiter with same email', async () => {
+      const data = await mockAccount('TYPE_RECRUITER');
+      const token = await mockToken(data);
+      const email = datas.currentUser.account.email;
+
+      let err;
+
+      try {
+        await put(server, {
+          url: `/api/v1/general/recruiter/${data.user._id}/`,
+          body: {
+            recruiter: {
+              email,
+              password: generateId(),
+              first_name: 'Patt updated',
+              last_name: 'Rik update',
+            },
+          },
+          headers: {
+            ...getAuthorizationHeaders(token.access_token),
+          },
+        });
+      } catch (e) {
+        err = e;
+      }
+
+      expect(err.statusCode).toBe(409);
+      expect(err.error.error).toBe('already_exists');
+
+      await data.clean();
+    });
+
+  });
+
+  // describe('DELETE /general/recruiter/:id', () => {
+
+  //   test('should remove recruiter account', async () => {
+  //     const data = await mockAccount('TYPE_RECRUITER');
+  //     const token = await mockToken(data);
+  //     const email = generateEmail();
+
+  //     const res = await put(server, {
+  //       url: `/api/v1/general/recruiter/${data.user._id}/`,
+  //       body: {
+  //         recruiter: {
+  //           email,
+  //           password: generateId(),
+  //           first_name: 'Patt updated',
+  //           last_name: 'Rik update',
+  //         },
+  //       },
+  //       headers: {
+  //         ...getAuthorizationHeaders(token.access_token),
+  //       },
+  //     });
+
+  //     expect(res.user).toBeDefined();
+  //     expect(res.user.account.email).toBe(email);
+
+  //     await data.clean();
+  //   });
+
+  // });
 
   afterAll(async () => {
     await server.stop();

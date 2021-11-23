@@ -6,7 +6,6 @@ import {
   Account,
   Company,
   User,
-  Recruiter,
 } from '@job-guetter/api-core/models';
 import {
   TOKEN_KEY,
@@ -113,7 +112,6 @@ export const mockToken = async e => {
     access_token: account.access_token,
   };
 };
-
 
 export const mockData = async (type = 'TYPE_JOBBER') => {
   const currentUser = await mockAccount(type);
