@@ -25,8 +25,10 @@ REDIS_PORT=6379
 
 # Sendgrid
 SENDGRID_API_KEY="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"
+EMAIL_SENDER={ "email": "tyler.escolano@ynov.com", "name": "Job Guetter"}
 
 # Sirene API
 SIRENE_URI="https://entreprise.data.gouv.fr/api/sirene/v1/siren/"
+
 
 ```
