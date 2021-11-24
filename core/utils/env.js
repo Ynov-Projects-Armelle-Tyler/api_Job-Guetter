@@ -22,6 +22,7 @@ export const REDIS_PORT = env.REDIS_PORT;
 
 // Sendgrid
 export const SENDGRID_API_KEY = env.SENDGRID_API_KEY;
+export const EMAIL_SENDER = JSON.parse(env.EMAIL_SENDER);
 
 // Sirene
 export const SIRENE_URI = env.SIRENE_URI;
