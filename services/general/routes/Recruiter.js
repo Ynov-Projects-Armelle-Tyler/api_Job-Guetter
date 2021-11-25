@@ -8,15 +8,14 @@ import * as Recruiter from '../Recruiter';
 export default {
 
   'POST /general/recruiter': {
-    interceptors: [
-      // AuthInterceptor(types),
-    ],
+    interceptors: [],
     handle: Recruiter.create,
   },
 
   'POST /general/recruiter/:id/company/:companyId': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor('TYPE_RECRUITER'),
+      IdentityInterceptor,
     ],
     handle: Recruiter.ask,
   },
@@ -47,7 +46,8 @@ export default {
 
   'DELETE /general/recruiter/:id': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor('TYPE_RECRUITER'),
+      IdentityInterceptor,
     ],
     handle: Recruiter.remove,
   },

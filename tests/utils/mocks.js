@@ -6,6 +6,7 @@ import {
   Account,
   Company,
   User,
+  Jobber,
 } from '@job-guetter/api-core/models';
 import {
   TOKEN_KEY,
@@ -64,6 +65,28 @@ export const mockAccount = async (type = 'TYPE_JOBBER') => {
       last_name: lastName,
     }).save();
 
+  if (type === 'TYPE_JOBBER') {
+    const jobber = await Jobber.from({
+      user,
+      description: 'some desc',
+    }).save();
+
+    return {
+      account,
+      email,
+      password,
+      user,
+      firstName,
+      lastName,
+      jobber,
+      clean: async () => {
+        await account.remove();
+        await user.remove();
+        await jobber.remove();
+      },
+    };
+  }
+
   const clean = async () => {
     await account.remove();
     await user.remove();
@@ -84,9 +107,13 @@ export const mockAccount = async (type = 'TYPE_JOBBER') => {
 export const mockToken = async e => {
   const account = await Account.findOne({ _id: e.account._id });
 
-  const user = account.type === 'TYPE_COMPANY'
+  let user = account.type === 'TYPE_COMPANY'
     ? await Company.findOne({ account })
     : await User.findOne({ _id: e.user._id });
+
+  if (account.type === 'TYPE_JOBBER') {
+    user = e.jobber;
+  }
 
   const accessToken = await sign(
     {

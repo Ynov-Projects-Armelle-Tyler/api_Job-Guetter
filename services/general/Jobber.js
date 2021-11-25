@@ -12,7 +12,6 @@ import {
   Conflict,
   NotFound,
 } from '@job-guetter/api-core/utils/errors';
-import { omit } from '@job-guetter/api-core/utils/helpers';
 
 export const create = async (req, res) => {
   const userInfo = assert(req.body.user, BadRequest('invalid_request'));
@@ -33,7 +32,7 @@ export const create = async (req, res) => {
   });
 
   const user = await User.from({
-    ...omit(userInfo, ['email', 'password']),
+    ...userInfo,
     account,
   });
 
@@ -98,18 +97,17 @@ export const remove = async (req, res) => {
     val => mongoose.Types.ObjectId.isValid(val));
 
   const jobber = assert(
-    await Jobber.findOne({ _id: jobberId })
-      .populate({ path: 'user', populate: { path: 'account' } }),
+    await Jobber.findOne({ _id: jobberId }).populate({ path: 'user' }),
     NotFound('user_not_found')
   );
 
   const user = assert(
-    await User.findOne({ _id: jobber.user._id }),
+    await User.findOne({ _id: jobber.user._id }).populate({ path: 'account' }),
     NotFound('accounts_not_found')
   );
 
   const account = assert(
-    await Account.findOne({ _id: user.account }),
+    await Account.findOne({ _id: user.account._id }),
     NotFound('accounts_not_found')
   );
 
