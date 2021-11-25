@@ -1,11 +1,15 @@
 import General from '@job-guetter/api-general';
-import { Account, User, Recruiter } from '@job-guetter/api-core/models';
+import {
+  Account,
+  User,
+  Recruiter,
+  Announcement,
+} from '@job-guetter/api-core/models';
 
 import {
   get,
   post,
   put,
-  patch,
   remove,
   getAuthorizationHeaders,
 } from '../../utils/request';
@@ -20,21 +24,13 @@ import { generateEmail, generateId } from '../../utils/defaults';
 jest.mock('node-fetch', () => jest.fn());
 
 describe('@job-guetter/api-general/Recruiter', () => {
-  let service, server, app, datas, ctx;
+  let service, server, app, datas;
 
   beforeAll(async () => {
     service = await mockServer(General, { returnOnlyServer: false });
     server = service.server;
     app = service.app;
     datas = await mockData('TYPE_RECRUITER');
-
-    ctx = {
-      recruiter: await Recruiter.from({
-        user: datas.currentUser.user,
-        company: datas.companies[0],
-        status: true,
-      }).save(),
-    };
   });
 
   describe('POST /general/recruiter', () => {
@@ -113,6 +109,65 @@ describe('@job-guetter/api-general/Recruiter', () => {
 
   });
 
+  describe('POST /general/recruiter/:id/company/:companyId', () => {
+
+    test('should ask to link recruiter & company', async () => {
+      const data = await mockData('TYPE_RECRUITER');
+      const user = data.currentUser.user;
+      const company = data.companies[0];
+
+      const spy = jest.spyOn(app.get('Sendgrid'), 'send');
+
+      const res = await post(server, {
+        url: `/api/v1/general/recruiter/${user._id}/company/${company._id}`,
+        body: {},
+        headers: {
+          ...getAuthorizationHeaders(data.currentToken.access_token),
+        },
+      });
+
+      expect(spy).toBeCalled();
+      expect(res.asked).toBe(true);
+
+      spy.mockRestore();
+      await data.clean();
+    });
+
+    test('should return already_exists', async () => {
+      const data = await mockData('TYPE_RECRUITER');
+      const user = data.currentUser.user;
+      const company = data.companies[0];
+      const recruiter = await Recruiter.from({
+        user,
+        company,
+      }).save();
+
+      const spy = jest.spyOn(app.get('Sendgrid'), 'send');
+
+      let err;
+
+      try {
+        await post(server, {
+          url: `/api/v1/general/recruiter/${user._id}/company/${company._id}`,
+          body: {},
+          headers: {
+            ...getAuthorizationHeaders(data.currentToken.access_token),
+          },
+        });
+      } catch (e) {
+        err = e;
+      }
+
+      expect(spy).not.toBeCalled();
+      expect(err.error.error).toBe('already_exists');
+
+      spy.mockRestore();
+      await data.clean();
+      await recruiter.remove();
+    });
+
+  });
+
   describe('GET /general/recruiter/:id', () => {
 
     test('should get recruiter infos', async () => {
@@ -187,6 +242,11 @@ describe('@job-guetter/api-general/Recruiter', () => {
 
     test('should get all companies with recruiter link', async () => {
       const id = datas.currentUser.user._id;
+      const recruiter = await Recruiter.from({
+        user: datas.currentUser.user,
+        company: datas.companies[0],
+        status: true,
+      }).save();
 
       const res = await get(server, {
         url: `/api/v1/general/recruiter/${id}/companies`,
@@ -197,6 +257,8 @@ describe('@job-guetter/api-general/Recruiter', () => {
 
       expect(res.companies).toBeDefined();
       expect(res.companies.length).toBe(1);
+
+      await recruiter.remove();
     });
 
     test('should return authorization error', async () => {
@@ -328,35 +390,88 @@ describe('@job-guetter/api-general/Recruiter', () => {
 
   });
 
-  // describe('DELETE /general/recruiter/:id', () => {
+  describe('DELETE /general/recruiter/:id', () => {
 
-  //   test('should remove recruiter account', async () => {
-  //     const data = await mockAccount('TYPE_RECRUITER');
-  //     const token = await mockToken(data);
-  //     const email = generateEmail();
+    test('should remove recruiter account', async () => {
+      const data = await mockData('TYPE_RECRUITER');
+      const user = data.currentUser.user;
+      const company = data.companies[0];
+      const recruiter = await Recruiter.from({
+        user,
+        company,
+        status: true,
+      }).save();
+      const announcement = await Announcement.from({
+        recruiter,
+        company,
+        contract_type: 'CDI',
+        name: 'test',
+      }).save();
 
-  //     const res = await put(server, {
-  //       url: `/api/v1/general/recruiter/${data.user._id}/`,
-  //       body: {
-  //         recruiter: {
-  //           email,
-  //           password: generateId(),
-  //           first_name: 'Patt updated',
-  //           last_name: 'Rik update',
-  //         },
-  //       },
-  //       headers: {
-  //         ...getAuthorizationHeaders(token.access_token),
-  //       },
-  //     });
+      const spy = jest.spyOn(app.get('Sendgrid'), 'send');
 
-  //     expect(res.user).toBeDefined();
-  //     expect(res.user.account.email).toBe(email);
+      const res = await remove(server, {
+        url: `/api/v1/general/recruiter/${user._id}`,
+        headers: {
+          ...getAuthorizationHeaders(data.currentToken.access_token),
+        },
+      });
 
-  //     await data.clean();
-  //   });
+      expect(spy).toBeCalled();
+      expect(res.deleted).toBe(true);
 
-  // });
+      spy.mockRestore();
+      await data.clean();
+      await recruiter?.remove();
+      await announcement?.remove();
+    });
+
+    test('should remove recruiter account without recruiter link', async () => {
+      const data = await mockData('TYPE_RECRUITER');
+      const user = data.currentUser.user;
+
+      const spy = jest.spyOn(app.get('Sendgrid'), 'send');
+
+      const res = await remove(server, {
+        url: `/api/v1/general/recruiter/${user._id}`,
+        headers: {
+          ...getAuthorizationHeaders(data.currentToken.access_token),
+        },
+      });
+
+      expect(spy).not.toBeCalled();
+      expect(res.deleted).toBe(true);
+
+      spy.mockRestore();
+      await data.clean();
+    });
+
+    test('should return wrong_recruiter_id', async () => {
+      const data = await mockData('TYPE_RECRUITER');
+      const spy = jest.spyOn(app.get('Sendgrid'), 'send');
+
+      let err;
+
+      try {
+        await remove(server, {
+          url: '/api/v1/general/recruiter/123',
+          headers: {
+            ...getAuthorizationHeaders(data.currentToken.access_token),
+          },
+        });
+
+      } catch (e) {
+        err = e;
+      }
+
+      expect(spy).not.toBeCalled();
+      expect(err.error.error).toBe('wrong_recruiter_id');
+
+      spy.mockRestore();
+      await data.clean();
+    });
+
+  });
 
   afterAll(async () => {
     await server.stop();
