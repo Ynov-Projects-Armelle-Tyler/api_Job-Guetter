@@ -165,14 +165,12 @@ describe('@job-guetter/api-general/Jobber', () => {
         },
       });
 
-      // TODO check clean func of mockData because he doesn't remove account
-
-      // const accounts = await Account.find({});
-      // const users = await User.find({});
+      const accounts = await Account.find({});
+      const users = await User.find({});
 
       expect(res.deleted).toBe(true);
-      // expect(accounts.length).toBe(0);
-      // expect(users.length).toBe(0);
+      expect(accounts.length).toBe(0);
+      expect(users.length).toBe(0);
 
       await data.clean();
     });
