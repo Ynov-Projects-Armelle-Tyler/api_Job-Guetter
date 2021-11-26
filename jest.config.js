@@ -12,6 +12,7 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '/node_modules/',
     'core\\/languages\\/(.+)\\/',
+    'services/general/Demo.js',
     'tests',
     '^.+\\.html',
   ],
