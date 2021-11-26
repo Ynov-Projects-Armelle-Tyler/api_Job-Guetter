@@ -356,7 +356,7 @@ describe('@job-guetter/api-general/Recruiter', () => {
       await data.clean();
     });
 
-    test('should udpate recruiter with same email', async () => {
+    test('should return already_exists', async () => {
       const data = await mockAccount('TYPE_RECRUITER');
       const token = await mockToken(data);
       const email = datas.currentUser.account.email;

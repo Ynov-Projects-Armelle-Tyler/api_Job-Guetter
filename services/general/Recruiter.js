@@ -143,7 +143,7 @@ export const update = async (req, res) => {
       type: Account.TYPE_RECRUITER,
     });
 
-    await old.remove();
+    await old?.remove();
   } else {
     Object.assign(account, {
       email,
