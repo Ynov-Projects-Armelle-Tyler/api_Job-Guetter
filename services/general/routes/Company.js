@@ -30,7 +30,7 @@ export default {
 
   'GET /general/company/:id': {
     interceptors: [
-      AuthInterceptor(['TYPE_COMPANY']),
+      AuthInterceptor('TYPE_COMPANY'),
       IdentityInterceptor,
     ],
     handle: Company.get,

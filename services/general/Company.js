@@ -6,6 +6,7 @@ import {
   Recruiter,
   Company,
 } from '@job-guetter/api-core/models';
+import { EMAIL_SENDER } from '@job-guetter/api-core/utils/env';
 import { assert } from '@job-guetter/api-core/utils/assert';
 import {
   BadRequest,
@@ -18,11 +19,11 @@ export const getSirene = async (req, res) => {
 
   const content = await req.app.get('Sirene_API').get(sirene);
 
-  if (content) {
-    res.json({ content });
-  } else {
-    NotFound('user_not_found');
+  if (!content) {
+    throw NotFound('company_not_found_by_siren');
   }
+
+  res.json({ content });
 };
 
 export const create = async (req, res) => {
@@ -55,7 +56,7 @@ export const get = async (req, res) => {
     val => mongoose.Types.ObjectId.isValid(val));
 
   const company = assert(
-    await Company.findOne({ _id: companyId }),
+    await Company.findOne({ _id: companyId }).populate('account'),
     NotFound('company_not_found')
   );
 
@@ -75,22 +76,42 @@ export const update = async (req, res) => {
   const password = assert(req.body.password, BadRequest('invalid password'));
 
   const company = assert(
-    await Company.findOne({ _id: companyId }),
+    await Company.findOne({ _id: companyId }).populate('account'),
     NotFound('company_not_found')
   );
 
-  const account = assert(
-    await Account.findOne({ _id: company.account })
-  );
+  let account = await Account.findOne({ email });
 
-  Object.assign(account, { email, password });
+  if (account && company.account._id.toString() !== account._id.toString()) {
+    throw Conflict('already_exists');
+  }
 
-  Object.assign(company, companyInfo);
+  if (!account) {
+    const old = await Account.findOne({ _id: company.account._id });
+
+    account = await Account.from({
+      email,
+      password,
+      type: Account.TYPE_COMPANY,
+    });
+
+    await old?.remove();
+  } else {
+    Object.assign(account, {
+      email,
+      password,
+    });
+  }
+
+  Object.assign(company, {
+    account,
+    ...companyInfo,
+  });
 
   await company.save();
   await account.save();
 
-  res.json({ updated: true });
+  res.json({ company });
 };
 
 export const remove = async (req, res) => {
@@ -98,22 +119,31 @@ export const remove = async (req, res) => {
     val => mongoose.Types.ObjectId.isValid(val));
 
   const company = assert(
-    await Company.findOne({ _id: companyId }),
+    await Company.findOne({ _id: companyId }).populate('account'),
     NotFound('company_not_found')
   );
 
   const account = assert(
-    await Account.findOne({ _id: company.account })
+    await Account.findOne({ _id: company.account._id })
   );
 
-  const recruiters = await Recruiter.find({ company });
+  const recruiters = await Recruiter
+    .find({ company })
+    .populate({
+      path: 'user',
+      select: ['account'],
+      populate: {
+        path: 'account',
+        select: ['email', 'type'],
+      },
+    });
 
   if (recruiters) {
     for (const recruiter of recruiters) {
-      const recruiterEmail = recruiter.recruiter_email;
+      const recruiterEmail = recruiter.user.account.email;
 
-      req.get('Sendgrid').send({
-        from: 'tyler.escolano@ynov.com',
+      req.app.get('Sendgrid').send({
+        from: EMAIL_SENDER,
         to: recruiterEmail,
         subject: 'Company break his link',
         body: `<p>We are sorry but company ${company.name} break ` +
@@ -152,22 +182,16 @@ export const updateRecruiters = async (req, res) => {
     val => mongoose.Types.ObjectId.isValid(val));
   const accept = assert(req.body.accept, BadRequest('invalid_request'));
 
+  const recruiter = await Recruiter.findOne({
+    _id: recruiterId,
+    company: companyId,
+  });
+
   if (accept) {
-    assert(
-      await Recruiter.updateOne(
-        { company: companyId, recruiter: recruiterId },
-        { status: true }
-      ), NotFound('recruiter_not_found')
-    );
-
-    res.json('accepted');
+    Object.assign(recruiter, { status: accept });
+    res.json({ accepted: true });
   } else {
-    assert(
-      await Recruiter.deleteOne(
-        { company: companyId, recruiter: recruiterId }
-      ), NotFound('recruiter_not_found')
-    );
-
-    res.json('deleted');
+    await recruiter.remove();
+    res.json({ deleted: true });
   }
 };

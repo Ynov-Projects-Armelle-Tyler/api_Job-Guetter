@@ -45,8 +45,15 @@ export const mockAccount = async (type = 'TYPE_JOBBER') => {
     }).save();
 
   if (type === 'TYPE_COMPANY') {
+    const company = await Company.from({
+      account,
+      name: 'test',
+      activity_area: 'agriculture',
+    }).save();
+
     return {
       account,
+      company,
       email,
       password,
       clean: async () => {
