@@ -145,6 +145,7 @@ export const mockToken = async e => {
 
   return {
     access_token: account.access_token,
+    refresh_token: account.refresh_token,
   };
 };
 

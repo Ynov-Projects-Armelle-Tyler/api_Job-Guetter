@@ -89,7 +89,7 @@
   "scripts": {
     "mjml": "./node_modules/.bin/mjml",
     "lint": "./node_modules/.bin/eslint --max-warnings=0 .",
-    "test": "./node_modules/.bin/jest",
+    "test": "./node_modules/.bin/jest --forceExit",
     "serve": "node ./script/serve.js",
     "build": "node ./script/build.js",
     "build:all": "yarn build --all",
