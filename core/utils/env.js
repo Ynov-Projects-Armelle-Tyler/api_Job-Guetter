@@ -22,7 +22,8 @@ export const REDIS_PORT = env.REDIS_PORT;
 
 // Sendgrid
 export const SENDGRID_API_KEY = env.SENDGRID_API_KEY;
-export const EMAIL_SENDER = JSON.parse(env.EMAIL_SENDER);
+export const EMAIL_SENDER = JSON.parse(env.EMAIL_SENDER) ||
+{ email: 'tyler.escolano@ynov.com', name: 'Job Guetter' };
 
 // Sirene
 export const SIRENE_URI = env.SIRENE_URI;
