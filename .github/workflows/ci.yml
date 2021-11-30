@@ -21,40 +21,39 @@ jobs:
         run: yarn install
       - name: Eslint check
         run: yarn lint
-  # 
-  # test:
-  #   name: Unit tests
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 10
-  #   strategy:
-  #     matrix:
-  #       node: [12, 14, 16]
-  #   services:
-  #     mongodb:
-  #       image: mongo:4
-  #       ports:
-  #         - 27017:27017
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #     - name: Setup node
-  #       uses: actions/setup-node@v2
-  #       with:
-  #         node-version: ${{ matrix.node }}
-  #     - name: Install deps
-  #       run: yarn install
-  #     - name: Get env
-  #       run: yarn getenv:test
-  #     - name: Test
-  #       run: yarn test
-  #     - name: Codecov upload
-  #       uses: codecov/codecov-action@v2.1.0
-  #       with:
-  #         token: ${{ secrets.CODECOV_TOKEN }}
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node: [12, 14, 16]
+    services:
+      mongodb:
+        image: mongo:4
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install deps
+        run: yarn install
+      - name: Test
+        run: yarn test
+        env: ${{ secrets.ENV_TEST_FILE }}
+      # - name: Codecov upload
+      #   uses: codecov/codecov-action@v2.1.0
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
 
   end:
     name: The end
-    needs: [lint]
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
