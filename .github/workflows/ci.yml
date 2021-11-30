@@ -43,9 +43,10 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: Install deps
         run: yarn install
+      - name: Add .env.test
+        run: echo "${{ secrets.ENV_TEST_FILE}}" > .env.test
       - name: Test
         run: yarn test
-        env: ${{ secrets.ENV_TEST_FILE }}
       # - name: Codecov upload
       #   uses: codecov/codecov-action@v2.1.0
       #   with:
