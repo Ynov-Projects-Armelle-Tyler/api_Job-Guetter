@@ -1,3 +1,4 @@
+import events from 'events';
 import { sign } from 'jsonwebtoken';
 
 import { Server } from '@job-guetter/api-core';
@@ -182,3 +183,61 @@ export const mockData = async (type = 'TYPE_JOBBER') => {
     clean,
   };
 };
+
+export const mockReq = () => ({
+  headers: {},
+  cookies: {},
+  query: {},
+  body: {},
+  params: {},
+  poool: {},
+  path: '/',
+  method: 'GET',
+  get: function (name) { return this.headers[name]; },
+});
+
+export const mockRes = () => ({
+  statusCode: 200,
+  events: new events(),
+  headers: {},
+  cookies: {},
+  type: function (type) {
+    this.headers['content-type'] = type;
+
+    return this;
+  },
+  send: function () { this.events.emit('finish'); },
+  json: function (data) { return this.send(data); },
+  setHeader: function (name, value) {
+    this.headers[name] = value;
+
+    return this;
+  },
+  removeHeader: function (name) {
+    delete this.headers[name];
+
+    return this;
+  },
+  status: function (code) {
+    this.statusCode = code;
+
+    return this;
+  },
+  clearCookie: function (name) {
+    delete this.cookies[name];
+
+    return this;
+  },
+  cookie: function (name, value) {
+    this.cookies[name] = value;
+
+    return this;
+  },
+  on: function (name, cb) {
+    this.events.on(name, cb);
+
+    return this;
+  },
+});
+
+export const mockNext = () => () => {};

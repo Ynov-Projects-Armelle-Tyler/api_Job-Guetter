@@ -13,6 +13,7 @@ module.exports = {
     '/node_modules/',
     'core\\/languages\\/(.+)\\/',
     'services/general/Demo.js',
+    'core/views',
     'tests',
     '^.+\\.html',
   ],
