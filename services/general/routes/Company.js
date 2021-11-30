@@ -8,23 +8,17 @@ import * as Company from '../Company';
 export default {
 
   'GET /general/company/sirene/:sirene': {
-    interceptors: [
-      // AuthInterceptor(types),
-    ],
+    interceptors: [],
     handle: Company.getSirene,
   },
 
   'POST /general/company': {
-    interceptors: [
-      // AuthInterceptor(types),
-    ],
+    interceptors: [],
     handle: Company.create,
   },
 
   'GET /general/company': {
-    interceptors: [
-      // AuthInterceptor(types),
-    ],
+    interceptors: [],
     handle: Company.getAll,
   },
 
@@ -38,28 +32,32 @@ export default {
 
   'PUT /general/company/:id': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor('TYPE_COMPANY'),
+      IdentityInterceptor,
     ],
     handle: Company.update,
   },
 
   'DELETE /general/company/:id': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor('TYPE_COMPANY'),
+      IdentityInterceptor,
     ],
     handle: Company.remove,
   },
 
   'GET /general/company/:id/recruiters': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor('TYPE_COMPANY'),
+      IdentityInterceptor,
     ],
     handle: Company.getRecruiters,
   },
 
   'PATCH /general/company/:id/recruiter/:recruiter_id': {
     interceptors: [
-      // AuthInterceptor(types),
+      AuthInterceptor('TYPE_COMPANY'),
+      IdentityInterceptor,
     ],
     handle: Company.updateRecruiters,
   },
