@@ -56,7 +56,7 @@ describe('@job-guetter/api-general/Recruiter', () => {
       });
 
       expect(res.created).toBe(true);
-      await Announcement.find().remove();
+      await Announcement.find({ company: company.company._id }).remove();
     });
 
     test('should return recruiter_disable', async () => {
@@ -145,10 +145,8 @@ describe('@job-guetter/api-general/Recruiter', () => {
         company: company.company,
       }).save();
       const app = await Applyment.from({
-        name: 'test',
-        contract_type: 'CDI',
-        recruiter,
-        company: company.company,
+        description: 'test',
+        announcement: ann,
       }).save();
 
       const res = await get(server, {

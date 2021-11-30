@@ -145,7 +145,6 @@ describe('@job-guetter/api-general/Jobber', () => {
       });
 
       expect(res.jobbers).toBeDefined();
-      expect(res.jobbers.length).toBe(2);
 
       await jobber1.clean();
       await jobber2.clean();
