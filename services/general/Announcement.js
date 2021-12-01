@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import {
   Recruiter,
   Announcement,
-  Company,
+  Applyment,
 } from '@job-guetter/api-core/models';
 import { assert } from '@job-guetter/api-core/utils/assert';
 import {
@@ -12,28 +12,30 @@ import {
   Unauthorized,
 } from '@job-guetter/api-core/utils/errors';
 
-import Applyment from './routes/Applyment';
-
 export const create = async (req, res) => {
-  const announcementInfo = assert(req.body.announcement,
-    BadRequest('invalid_request')
+  const annInfos = assert(req.body.announcement, BadRequest('invalid_request'));
+  const companyId = assert(req.body.companyId,
+    BadRequest('wrong_company_id'),
+    val => mongoose.Types.ObjectId.isValid(val)
   );
-  const recruiter = req.decoded._id;
-  const company = await Company.findOne({ name: announcementInfo.company });
 
-  const isCompanyRecruiter = await Recruiter.findOne({ recruiter, company });
+  const recruiter = assert(
+    await Recruiter.findOne({
+      user: req.decoded.user_id,
+      company: companyId,
+    }),
+    NotFound('recruiter_not_found')
+  );
 
-  if (!isCompanyRecruiter) {
-    Unauthorized('not_allowed');
+  if (!recruiter.status) {
+    throw Unauthorized('recruiter_disable');
   }
 
-  const announcement = await Announcement.from({
-    ...announcementInfo,
+  await Announcement.from({
+    ...annInfos,
     recruiter,
-    company,
-  });
-
-  await announcement.save();
+    company: recruiter.company,
+  }).save();
 
   res.json({ created: true });
 };
@@ -63,23 +65,30 @@ export const update = async (req, res) => {
     BadRequest('wrong_announcement_id'),
     val => mongoose.Types.ObjectId.isValid(val)
   );
-  const announcementInfo = assert(req.body.announcement,
-    BadRequest('invalid_request')
-  );
+  const annInfos = assert(req.body.announcement, BadRequest('invalid_request'));
 
   const announcement = assert(
-    await Announcement.findOne({
-      _id: announcementId,
-      recruiter: req.decoded._id,
-    }),
+    await Announcement.findOne({ _id: announcementId }),
     NotFound('announcement_not_found')
   );
 
-  Object.assign(announcement, announcementInfo);
+  const recruiter = assert(
+    await Recruiter.findOne({
+      user: req.decoded.user_id,
+      company: announcement.company,
+    }),
+    NotFound('recruiter_not_found')
+  );
+
+  if (!recruiter.status) {
+    throw Unauthorized('recruiter_disable');
+  }
+
+  Object.assign(announcement, annInfos);
 
   await announcement.save();
 
-  res.json({ updated: true });
+  res.json({ announcement });
 };
 
 export const archive = async (req, res) => {
@@ -88,14 +97,15 @@ export const archive = async (req, res) => {
     val => mongoose.Types.ObjectId.isValid(val)
   );
 
-  assert(
-    await Announcement.findOneAndUpdate({
+  const ann = assert(
+    await Announcement.findOne({
       _id: announcementId,
-      recruiter: req.decoded._id,
-      deleted: true,
+      deleted: false,
     }),
     NotFound('announcement_not_found')
   );
+
+  ann.deleted = true;
 
   res.json({ deleted: true });
 };
@@ -107,10 +117,7 @@ export const getAllApplyment = async (req, res) => {
   );
 
   const announcement = assert(
-    await Announcement.findOne({
-      _id: announcementId,
-      recruiter: req.decoded._id,
-    }),
+    await Announcement.findOne({ _id: announcementId }),
     NotFound('announcement_not_found')
   );
 

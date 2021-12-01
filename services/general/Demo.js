@@ -4,8 +4,8 @@ import {
   Account,
   Recruiter,
   Company,
-  JobAnnouncement,
-  JobApplyement,
+  Announcement,
+  Applyment,
   Jobber,
   User,
 } from '@job-guetter/api-core/models';
@@ -77,18 +77,18 @@ export const feed = async (req, res) => {
   const r4 = await Recruiter.from({ user: ur3, company: c2, status: true }).save();
   const r5 = await Recruiter.from({ user: ur1, company: c3, status: false }).save();
 
-  // JobAnnouncement
-  const jAn1 = await JobAnnouncement.from({ company: c1, recruiter: r1, name: 'Some job', activity_field: 'tech', contract_type: 'CDI', localisation: '89 Quai des Chartrons, 33300 Bordeaux', job_start: '2021-05-18T16:00:00Z', job_description: 'Well as you want', missions: ['As', 'You', 'Want'], profile: 'SOSO',
+  // Announcement
+  const jAn1 = await Announcement.from({ company: c1, recruiter: r1, name: 'Some job', activity_field: 'tech', contract_type: 'CDI', localisation: '89 Quai des Chartrons, 33300 Bordeaux', job_start: '2021-05-18T16:00:00Z', job_description: 'Well as you want', missions: ['As', 'You', 'Want'], profile: 'SOSO',
     salary: 3800, seen: 12, deleted: false }).save();
-  const jAn2 = await JobAnnouncement.from({ company: c2, recruiter: r3, name: 'Other Some job', activity_field: 'tech', contract_type: 'CDI', localisation: '89 Quai des Chartrons, 33300 Bordeaux', job_start: '2021-05-18T16:00:00Z', job_description: 'Well as you want', missions: ['As', 'You', 'Want'], profile: 'SOSO',
+  const jAn2 = await Announcement.from({ company: c2, recruiter: r3, name: 'Other Some job', activity_field: 'tech', contract_type: 'CDI', localisation: '89 Quai des Chartrons, 33300 Bordeaux', job_start: '2021-05-18T16:00:00Z', job_description: 'Well as you want', missions: ['As', 'You', 'Want'], profile: 'SOSO',
     salary: 3800, seen: 12, deleted: true }).save();
-  const jAn3 = await JobAnnouncement.from({ company: c1, recruiter: r2, name: 'Again Some job', activity_field: 'tech', contract_type: 'CDI', localisation: '89 Quai des Chartrons, 33300 Bordeaux', job_start: '2021-05-18T16:00:00Z', job_description: 'Well as you want', missions: ['As', 'You', 'Want'], profile: 'SOSO',
+  const jAn3 = await Announcement.from({ company: c1, recruiter: r2, name: 'Again Some job', activity_field: 'tech', contract_type: 'CDI', localisation: '89 Quai des Chartrons, 33300 Bordeaux', job_start: '2021-05-18T16:00:00Z', job_description: 'Well as you want', missions: ['As', 'You', 'Want'], profile: 'SOSO',
     salary: 3800, seen: 12, deleted: false }).save();
 
-  // JobApplyement
-  const jAp1 = await JobApplyement.from({ jobber: j1, job_announcement: jAn1, cv: 'https://www.modeles-de-cv.com/wp-content/uploads/2020/01/120-modele-cv-francais.jpg', skills: 'Don\'t', description: 'Pleas stop desc' }).save();
-  const jAp2 = await JobApplyement.from({ jobber: j2, job_announcement: jAn2, cv: 'https://www.modeles-de-cv.com/wp-content/uploads/2020/01/120-modele-cv-francais.jpg', skills: 'Don\'t', description: 'Pleas stop desc' }).save();
-  const jAp3 = await JobApplyement.from({ jobber: j3, job_announcement: jAn2, cv: 'https://www.modeles-de-cv.com/wp-content/uploads/2020/01/120-modele-cv-francais.jpg', skills: 'Don\'t', description: 'Pleas stop desc' }).save();
+  // Applyment
+  const jAp1 = await Applyment.from({ jobber: j1, job_announcement: jAn1, cv: 'https://www.modeles-de-cv.com/wp-content/uploads/2020/01/120-modele-cv-francais.jpg', skills: 'Don\'t', description: 'Pleas stop desc' }).save();
+  const jAp2 = await Applyment.from({ jobber: j2, job_announcement: jAn2, cv: 'https://www.modeles-de-cv.com/wp-content/uploads/2020/01/120-modele-cv-francais.jpg', skills: 'Don\'t', description: 'Pleas stop desc' }).save();
+  const jAp3 = await Applyment.from({ jobber: j3, job_announcement: jAn2, cv: 'https://www.modeles-de-cv.com/wp-content/uploads/2020/01/120-modele-cv-francais.jpg', skills: 'Don\'t', description: 'Pleas stop desc' }).save();
 
   res.json({ created: true });
 };

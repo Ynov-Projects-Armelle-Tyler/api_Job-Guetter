@@ -2,7 +2,7 @@ import { compare } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken';
 
 import isEmail from '@job-guetter/api-core/utils/validate';
-import { Account, Company, User } from '@job-guetter/api-core/models';
+import { Account, Company, User, Jobber } from '@job-guetter/api-core/models';
 import { assert } from '@job-guetter/api-core/utils/assert';
 import {
   BadRequest,
@@ -30,7 +30,7 @@ const grantWithPassword = async (req, res) => {
     throw Unauthorized('access_denied');
   }
 
-  const user = account.type === 'TYPE_COMPANY'
+  let user = account.type === 'TYPE_COMPANY'
     ? assert(
       await Company.findOne({ account }),
       NotFound('company_not_found')
@@ -39,6 +39,13 @@ const grantWithPassword = async (req, res) => {
       await User.findOne({ account }),
       NotFound('account_not_found')
     );
+
+  if (account.type === 'TYPE_JOBBER') {
+    user = assert(
+      await Jobber.findOne({ user }),
+      NotFound('account_not_found')
+    );
+  }
 
   const accessToken = await sign(
     {
