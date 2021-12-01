@@ -6,9 +6,10 @@ import {
   User,
   Recruiter,
   Company,
-  JobAnnouncement,
+  Announcement,
 } from '@job-guetter/api-core/models';
 import { assert } from '@job-guetter/api-core/utils/assert';
+import { EMAIL_SENDER } from '@job-guetter/api-core/utils/env';
 import {
   BadRequest,
   Conflict,
@@ -49,7 +50,7 @@ export const ask = async (req, res) => {
     val => mongoose.Types.ObjectId.isValid(val));
   const companyId = assert(
     req.params.companyId,
-    BadRequest('wrong_recruiter_id'),
+    BadRequest('wrong_company_id'),
     val => mongoose.Types.ObjectId.isValid(val)
   );
 
@@ -62,6 +63,12 @@ export const ask = async (req, res) => {
     NotFound('company_not_found')
   );
 
+  const exists = await Recruiter.findOne({ company, user });
+
+  if (exists) {
+    throw Conflict('already_exists');
+  }
+
   await Recruiter.from({
     user,
     company,
@@ -69,8 +76,8 @@ export const ask = async (req, res) => {
   }).save();
 
   req.app.get('Sendgrid').send({
-    from: 'tyler.escolano@ynov.com',
-    to: company.account.email,
+    from: EMAIL_SENDER,
+    to: 'escolano.tyler@gmail.com',
     subject: 'Recruiter break his link',
     body: `<p>We are sorry but recruiter ${user.first_name} break ` +
       'his link with you</p>',
@@ -104,7 +111,7 @@ export const getAllCompanies = async (req, res) => {
     .find({ user })
     .populate('company', ['name', 'logo']);
 
-  const companies = recruiters.map(r => r.comapny);
+  const companies = await recruiters.map(r => r.company);
 
   res.json({ companies });
 };
@@ -136,7 +143,7 @@ export const update = async (req, res) => {
       type: Account.TYPE_RECRUITER,
     });
 
-    await old.remove();
+    await old?.remove();
   } else {
     Object.assign(account, {
       email,
@@ -184,23 +191,23 @@ export const remove = async (req, res) => {
     for (const recruiter of recruiters) {
       const companyEmail = recruiter.company.account.email;
 
-      const jobAnnouncements = await JobAnnouncement.find({
-        recruiter,
-        deleted: false,
-      });
+      const announcements = await Announcement.find({ recruiter });
 
       // TODO: remove eslint disable && use jobAnnInfos for emails
       /*eslint-disable no-unused-vars*/
-      const jobAnnInfos = jobAnnouncements?.map(async ann => {
+      announcements.forEach(async ann => {
         ann.deleted = true;
         ann.recruiter = undefined;
         await ann.save();
-
-        return { _id: ann._id, name: ann.name };
       });
 
+      const jobAnnInfos = await announcements?.map(ann => ({
+        _id: ann._id,
+        name: ann.name,
+      }));
+
       req.app.get('Sendgrid').send({
-        from: 'tyler.escolano@ynov.com',
+        from: EMAIL_SENDER,
         to: companyEmail,
         subject: 'Recruiter break his link',
         body: `<p>We are sorry but recruiter ${user.first_name} break ` +
