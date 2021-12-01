@@ -446,7 +446,7 @@ describe('@job-guetter/api-general/Recruiter', () => {
       await data.clean();
     });
 
-    test('should return wrong_account_id', async () => {
+    test('should return wrong_recruiter_id', async () => {
       const data = await mockData('TYPE_RECRUITER');
       const spy = jest.spyOn(app.get('Sendgrid'), 'send');
 
@@ -465,7 +465,7 @@ describe('@job-guetter/api-general/Recruiter', () => {
       }
 
       expect(spy).not.toBeCalled();
-      expect(err.error.error).toBe('wrong_account_id');
+      expect(err.error.error).toBe('wrong_recruiter_id');
 
       spy.mockRestore();
       await data.clean();

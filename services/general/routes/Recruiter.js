@@ -46,8 +46,8 @@ export default {
 
   'DELETE /general/recruiter/:id': {
     interceptors: [
-      AuthInterceptor('TYPE_RECRUITER'),
-      IdentityInterceptor,
+      // AuthInterceptor('TYPE_RECRUITER'),
+      // IdentityInterceptor,
     ],
     handle: Recruiter.remove,
   },

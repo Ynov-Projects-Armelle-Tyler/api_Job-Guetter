@@ -8,6 +8,7 @@ import {
 } from '@job-guetter/api-core/models';
 import { EMAIL_SENDER } from '@job-guetter/api-core/utils/env';
 import { assert } from '@job-guetter/api-core/utils/assert';
+import { load } from '@job-guetter/api-core/views';
 import {
   BadRequest,
   Conflict,
@@ -47,6 +48,15 @@ export const create = async (req, res) => {
 
   await account.save();
   await company.save();
+
+  req.app.get('Sendgrid').send({
+    from: EMAIL_SENDER,
+    to: account.email,
+    subject: 'Welcome',
+    body: load('emails/welcome', {
+      user: `${company.name}`,
+    }),
+  });
 
   res.json({ created: true });
 };
@@ -146,8 +156,7 @@ export const remove = async (req, res) => {
         from: EMAIL_SENDER,
         to: recruiterEmail,
         subject: 'Company break his link',
-        body: `<p>We are sorry but company ${company.name} break ` +
-          'his link with you</p>',
+        body: load('emails/companyBreak', { user: company.name }),
       });
 
       await recruiter.remove();

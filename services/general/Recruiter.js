@@ -9,6 +9,7 @@ import {
   Announcement,
 } from '@job-guetter/api-core/models';
 import { assert } from '@job-guetter/api-core/utils/assert';
+import { load } from '@job-guetter/api-core/views';
 import { EMAIL_SENDER } from '@job-guetter/api-core/utils/env';
 import {
   BadRequest,
@@ -41,6 +42,15 @@ export const create = async (req, res) => {
 
   await account.save();
   await user.save();
+
+  req.app.get('Sendgrid').send({
+    from: EMAIL_SENDER,
+    to: account.email,
+    subject: 'Welcome',
+    body: load('emails/welcome', {
+      user: `${user.first_name} ${user.last_name}`,
+    }),
+  });
 
   res.json({ created: true });
 };
@@ -193,8 +203,6 @@ export const remove = async (req, res) => {
 
       const announcements = await Announcement.find({ recruiter });
 
-      // TODO: remove eslint disable && use jobAnnInfos for emails
-      /*eslint-disable no-unused-vars*/
       announcements.forEach(async ann => {
         ann.deleted = true;
         ann.recruiter = undefined;
@@ -210,8 +218,10 @@ export const remove = async (req, res) => {
         from: EMAIL_SENDER,
         to: companyEmail,
         subject: 'Recruiter break his link',
-        body: `<p>We are sorry but recruiter ${user.first_name} break ` +
-          'his link with you</p>',
+        body: load('emails/recruiterBreak', {
+          user: `${user.first_name} ${user.last_name}`,
+          announcements: jobAnnInfos,
+        }),
       });
 
       await recruiter.remove();

@@ -7,6 +7,8 @@ import {
   Jobber,
 } from '@job-guetter/api-core/models';
 import { assert } from '@job-guetter/api-core/utils/assert';
+import { load } from '@job-guetter/api-core/views';
+import { EMAIL_SENDER } from '@job-guetter/api-core/utils/env';
 import {
   BadRequest,
   Conflict,
@@ -41,6 +43,15 @@ export const create = async (req, res) => {
   await account.save();
   await user.save();
   await jobber.save();
+
+  req.app.get('Sendgrid').send({
+    from: EMAIL_SENDER,
+    to: account.email,
+    subject: 'Welcome',
+    body: load('emails/welcome', {
+      user: `${user.first_name} ${user.last_name}`,
+    }),
+  });
 
   res.json({ created: true });
 };
