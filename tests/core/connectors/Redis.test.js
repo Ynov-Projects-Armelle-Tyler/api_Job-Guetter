@@ -2,7 +2,7 @@ import sinon from 'sinon';
 
 import { Redis } from '@job-guetter/api-core/connectors';
 
-describe('@poool/api-core/connectors/Redis', () => {
+describe('@job-guetter/api-core/connectors/Redis', () => {
 
   test('should set a new Redis app setting', () => {
     const set = sinon.spy();
