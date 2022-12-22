@@ -70,7 +70,7 @@
     "express-brute": "^1.0.1",
     "express-brute-redis": "^0.0.1",
     "filesize": "6.3.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mjml": "^4.10.4",
     "mongoose": "4.13.21",
     "node-fetch": "2.6.5",
